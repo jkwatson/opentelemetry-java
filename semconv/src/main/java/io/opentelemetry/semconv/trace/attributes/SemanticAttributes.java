@@ -18,7 +18,7 @@ import java.util.List;
 // buildscripts/semantic-convention/templates/SemanticAttributes.java.j2
 public final class SemanticAttributes {
   /** The URL of the OpenTelemetry schema for these keys and values. */
-  public static final String SCHEMA_URL = "https://opentelemetry.io/schemas/1.9.0";
+  public static final String SCHEMA_URL = "https://opentelemetry.io/schemas/1.10.0";
 
   /**
    * The full invoked ARN as provided on the {@code Context} passed to the function ({@code
@@ -33,6 +33,45 @@ public final class SemanticAttributes {
    */
   public static final AttributeKey<String> AWS_LAMBDA_INVOKED_ARN =
       stringKey("aws.lambda.invoked_arn");
+
+  /**
+   * The <a
+   * href="https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#id">event_id</a>
+   * uniquely identifies the event.
+   */
+  public static final AttributeKey<String> CLOUDEVENTS_EVENT_ID = stringKey("cloudevents.event_id");
+
+  /**
+   * The <a
+   * href="https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#source-1">source</a>
+   * identifies the context in which an event happened.
+   */
+  public static final AttributeKey<String> CLOUDEVENTS_EVENT_SOURCE =
+      stringKey("cloudevents.event_source");
+
+  /**
+   * The <a
+   * href="https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#specversion">version
+   * of the CloudEvents specification</a> which the event uses.
+   */
+  public static final AttributeKey<String> CLOUDEVENTS_EVENT_SPEC_VERSION =
+      stringKey("cloudevents.event_spec_version");
+
+  /**
+   * The <a
+   * href="https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#type">event_type</a>
+   * contains a value describing the type of event related to the originating occurrence.
+   */
+  public static final AttributeKey<String> CLOUDEVENTS_EVENT_TYPE =
+      stringKey("cloudevents.event_type");
+
+  /**
+   * The <a
+   * href="https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md#subject">subject</a>
+   * of the event in the context of the event producer (identified by source).
+   */
+  public static final AttributeKey<String> CLOUDEVENTS_EVENT_SUBJECT =
+      stringKey("cloudevents.event_subject");
 
   /**
    * Parent-child Reference type
@@ -227,7 +266,7 @@ public final class SemanticAttributes {
    *   <li>It is usually not possible to determine at the point where an exception is thrown whether
    *       it will escape the scope of a span. However, it is trivial to know that an exception will
    *       escape, if one checks for an active exception just before ending the span, as done in the
-   *       <a href="#exception-end-example">example above</a>.
+   *       <a href="#recording-an-exception">example above</a>.
    *   <li>It follows that an exception may still escape the scope of the span even if the {@code
    *       exception.escaped} attribute was not set or set to false, since the event might have been
    *       recorded at a time where it was not clear whether the exception will escape.
@@ -532,6 +571,9 @@ public final class SemanticAttributes {
   public static final AttributeKey<Long> HTTP_RESPONSE_CONTENT_LENGTH_UNCOMPRESSED =
       longKey("http.response_content_length_uncompressed");
 
+  /** The ordinal number of request re-sending attempt. */
+  public static final AttributeKey<Long> HTTP_RETRY_COUNT = longKey("http.retry_count");
+
   /**
    * The primary server name of the matched virtual host. This should be obtained via configuration.
    * If no such configuration can be obtained, this attribute MUST NOT be set ( {@code
@@ -794,7 +836,7 @@ public final class SemanticAttributes {
   public static final AttributeKey<String> MESSAGING_ROCKETMQ_CONSUMPTION_MODEL =
       stringKey("messaging.rocketmq.consumption_model");
 
-  /** A string identifying the remoting system. */
+  /** A string identifying the remoting system. See below for a list of well-known identifiers. */
   public static final AttributeKey<String> RPC_SYSTEM = stringKey("rpc.system");
 
   /**
@@ -1189,6 +1231,19 @@ public final class SemanticAttributes {
     public static final String BROADCASTING = "broadcasting";
 
     private MessagingRocketmqConsumptionModelValues() {}
+  }
+
+  public static final class RpcSystemValues {
+    /** gRPC. */
+    public static final String GRPC = "grpc";
+    /** Java RMI. */
+    public static final String JAVA_RMI = "java_rmi";
+    /** .NET WCF. */
+    public static final String DOTNET_WCF = "dotnet_wcf";
+    /** Apache Dubbo. */
+    public static final String APACHE_DUBBO = "apache_dubbo";
+
+    private RpcSystemValues() {}
   }
 
   public static final class RpcGrpcStatusCodeValues {
